@@ -164,3 +164,19 @@ Currenrly the name has no use but it will be made use of."
   (mapcar #'(lambda (field)
               (read-binary-type field buffer))
           (composite-type-structure type)))
+
+;;; **************************************************************************
+;;;  Convenience macros
+;;; **************************************************************************
+
+(defmacro with-binary-inpit ((buffer data) &body body)
+  "Creates and binds buffer with data to given variables and executes body with
+this binding."
+  `(fast-io:with-fast-input (,buffer ,data)
+     ,@body))
+
+(defmacro with-binary-output ((buffer) &body body)
+  "Creates and binds buffer to given variables and executes body with
+this binding. Afterwards, returns data written to buffer."
+  `(fast-io:with-fast-output (,buffer)
+     ,@body))

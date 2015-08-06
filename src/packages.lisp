@@ -29,6 +29,11 @@ with types and/or define your own.")
            #:invalid-structure     ; Condition
            #:define-composite-type ; Macro
            )
+
+  ;; Convenience functions/macros
+  (:export #:with-binary-input  ; Macros
+           #:with-binary-output ; Macros
+           )
   )
 
 (defpackage #:binarium.types
