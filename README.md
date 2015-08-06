@@ -24,3 +24,115 @@ be slow, buggy and inefficient.
 
 Usage
 =====
+
+The following types are shipped with binarium:
+
+* Unsigned integer (8-bit, 16-bit, 32-bit, 64-bit, 128-bit)
+* Signed integer (8-bit, 16-bit, 32-bit, 64-bit, 128-bit)
+* VarNum (VarInt with 32-bit max, VarLong with 64-bit max)
+* IEEE floating point numbers (32-bit single precision, 64-bit double precision)
+* Char (8-bit)
+* String (up to 2^32 8-bit characters with length encoded as VarInt)
+* Boolean (8-bit since making it occupy less than one byte is costly)
+* UUIDs (128-bit)
+* Byte array (up to 2^32 octets with length encoded as VarInt)
+
+Correspondingly, the following symbols are bound to above mentioned types:
+
+* BINTYPE:U1, BINTYPE:U2, BINTYPE:U4, BINTYPE:U8, BINTYPE:U16
+* BINTYPE:S1, BINTYPE:S2, BINTYPE:S4, BINTYPE:S8, BINTYPE:S16
+* BINTYPE:VAR-INT, BINTYPE:VAR-LONG
+* BINTYPE:F4, BINTYPE:F8
+* BINTYPE:CHAR
+* BINTYPE:STRING
+* BINTYPE:BOOL
+* BINTYPE:UUID
+* BINTYPE:BYTE-ARRAY
+
+In order to use binarium you must first create fast-io buffer. This can be done manually or using the following macros:
+
+```lisp
+;; Input buffer
+(binarium:with-binary-input (buffer binary-data)
+  ;; Your code
+  )
+
+;; Output buffer
+(binarium:with-binary-output (buffer)
+  ;; Your code
+  )
+```
+
+The encoding and decoding is done though the following calls:
+
+```lisp
+;; Encoding
+;; * "type" is either one of built-in types or user-defined type
+;; * "data" is the data you want to write
+(binarium:with-binary-output (buffer)
+  (binarium:write-binary-type type data buffer))
+
+;; Decoding
+;; * "type" is either one of built-in types or user-defined type
+;; * "data" is the data you want to read
+(binarium:with-binary-input (buffer data)
+  (binarium:read-binary-type type buffer))
+```
+
+Composite types
+===============
+
+Composite types are a way to pack a few basic (or even other composite) types
+together as an atomic type.
+
+Now they aren't much but I plan to make their parsing more efficient by
+precompiling parsers for them instead of iterating over their structure.
+
+You can define composite types using BINARIUM:DEFINE-COMPOSITE-TYPE macro:
+
+```lisp
+(binarium:define-composite-type my-composite-type
+  (bintype:u2 a-number)
+  (bintype:string a-string))
+```
+
+The type can then be used as usual with an exception that it's represented as
+list with elements ordered according to the order of types supplied in
+definition.
+
+Currently, the name of field in composite type is unused but I plan to make
+composite types decode to instances of the corresponding classes with slots
+bound to field values.
+
+If the composite types decoder/encoder encounters invalid composite type
+structure, INVALID-STRUCTURE condition is signaled.
+
+Extending default types
+=======================
+
+If you want to extend default binarium types, the following classes are available:
+
+*  BINTYPE:UNSIGNED-INTEGER
+*  BINTYPE:SIGNED-INTEGER
+*  BINTYPE:VAR-NUM
+*  BINTYPE:FLOAT
+*  BINTYPE:CHARACTER
+*  BINTYPE:STRING
+*  BINTYPE:BOOLEAN
+*  BINTYPE:UUID
+*  BINTYPE:BYTE-ARRAY
+
+If you want to define your own types the following classes may aid you:
+
+* BINARIUM:BINARY-TYPE
+* BINARIUM:BINARY-ARRAY
+
+* BINARIUM:BASIC-TYPE
+* BINARIUM:COMPOSITE-TYPE
+
+The following macros can be used to simplify defining your own types:
+
+* BINARIUM:DEFINE-BINARY-TYPE
+* BINARIUM:DEFINE-BINARY-ARRAY
+
+For more information, see sources or documentation strings.
