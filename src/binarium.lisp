@@ -169,7 +169,7 @@ Currenrly the name has no use but it will be made use of."
 ;;;  Convenience macros
 ;;; **************************************************************************
 
-(defmacro with-binary-inpit ((buffer data) &body body)
+(defmacro with-binary-input ((buffer data) &body body)
   "Creates and binds buffer with data to given variables and executes body with
 this binding."
   `(fast-io:with-fast-input (,buffer ,data)
