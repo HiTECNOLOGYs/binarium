@@ -7,6 +7,9 @@
                #:ieee-floats ; IEEE floating point numbers
                #:uuid        ; UUIDs
                )
+  :in-order-to ((test-op (load-op :binarium/tests)))
+  :perform (test-op (op component)
+             (asdf/package:symbol-call :fiveam :run! :binarium))
   :serial t
   :pathname "src/"
   :components ((:file "packages")
