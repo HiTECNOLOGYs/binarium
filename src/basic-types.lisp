@@ -114,14 +114,14 @@
 
 (defmethod read-binary-type ((type binarium.types:float) buffer)
   (case (binary-type-size type)
-    (4 (ieee-floats:decode-float32 (fast-io:read64-be buffer)))
-    (8 (ieee-floats:decode-float64 (fast-io:read128-be buffer)))
+    (4 (ieee-floats:decode-float32 (fast-io:readu32-be buffer)))
+    (8 (ieee-floats:decode-float64 (fast-io:readu64-be buffer)))
     (otherwise (error "Non-standard lengths are currently not supported."))))
 
 (defmethod write-binary-type ((type binarium.types:float) (data float) buffer)
   (case (binary-type-size type)
-    (4 (fast-io:write64-be (ieee-floats:encode-float32 data) buffer))
-    (8 (fast-io:write128-be (ieee-floats:encode-float64 data) buffer))
+    (4 (fast-io:writeu32-be (ieee-floats:encode-float32 data) buffer))
+    (8 (fast-io:writeu64-be (ieee-floats:encode-float64 data) buffer))
     (otherwise (error "Non-standard lengths are currently not supported."))))
 
 ;;; **************************************************************************
