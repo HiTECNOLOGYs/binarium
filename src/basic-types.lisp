@@ -223,3 +223,60 @@
 (defmethod write-binary-type ((type binarium.types:byte-array) (data vector) buffer)
   (write-binary-type 'bintype:var-int (length data) buffer)
   (fast-io:fast-write-sequence data buffer))
+
+;;; **************************************************************************
+;;;  Emuns
+;;; **************************************************************************
+
+(defclass binarium.types:symbol-map (basic-type)
+  ((symbols-map :initarg :symbols-map
+                :initform (make-hash-table :test 'equal)
+                :documentation "Defines number-to-symbol mappings.")
+   (reverse-symbols-map :initarg :reverse-symbols-map
+                        :initform (make-hash-table :test 'equal)
+                        :documentation "Defines symbol-to-number mappings.")
+   (binary-type :initarg :binary-type
+                :documentation "Defines type of binary representation of symbols.")))
+
+(defmethod initialize-instance :after ((instance binarium.types:symbol-map) &rest initargs)
+  (declare (ignore initargs))
+  (with-slots (symbols-map reverse-symbols-map) instance
+    (maphash #'(lambda (key value)
+                 (setf (symbol->binary value reverse-symbols-map) key))
+             symbols-map)))
+
+(defun (setf symbol->binary) (new-value data table)
+  (setf (gethash data table) new-value))
+
+(defun (setf binary->symbol) (new-value data table)
+  (setf (gethash data table) new-value))
+
+;; TODO Implement configurable default value
+(defun symbol->binary (data table)
+  (gethash data table 0))
+
+;; TODO Implement configurable default value
+(defun binary->symbol (data table)
+  (gethash data table 'binarium.types:undefined))
+
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defun make-mappings-hash-table (mappings)
+    (let ((table (make-hash-table :test 'equal)))
+      (loop for (binary symbol) in mappings do
+            (setf (gethash binary table) symbol))
+      table)))
+
+(defmacro define-enum (name (&key (binary-type 'binarium.types:u1)) &body mappings)
+  "Defines new enum. The mappins are lists of format: (binary-value symbol).
+At the moment, it does not support automatic numbering, but it will."
+  `(define-binary-type binarium.types:symbol-map ,name (binary-type-size ',binary-type)
+     :symbols-map ,(make-mappings-hash-table mappings)
+     :binary-type ',binary-type))
+
+(defmethod read-binary-type ((type binarium.types:symbol-map) buffer)
+  (with-slots (binary-type symbols-map) type
+    (binary->symbol (read-binary-type binary-type buffer) symbols-map)))
+
+(defmethod write-binary-type ((type binarium.types:symbol-map) (data symbol) buffer)
+  (with-slots (binary-type reverse-symbols-map) type
+    (write-binary-type binary-type (symbol->binary data reverse-symbols-map) buffer)))

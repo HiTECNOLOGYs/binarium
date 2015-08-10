@@ -52,6 +52,7 @@ collisions with some symbols in CL package and for the sake of consistency.")
            #:boolean          ; Class
            #:uuid             ; Class
            #:byte-array       ; Class
+           #:symbol-map       ; Class
            )
 
   ;; Unsigned integers
@@ -98,5 +99,11 @@ collisions with some symbols in CL package and for the sake of consistency.")
 
   ;; Byte arrays
   (:export #:byte-array ; Symbol
+           )
+
+  ;; Enums
+  (:export #:enum        ; Symbol
+           #:undefined   ; Symbol
+           #:define-enum ; Macro
            )
   )
