@@ -56,19 +56,19 @@ collisions with some symbols in CL package and for the sake of consistency.")
            )
 
   ;; Unsigned integers
-  (:export #:u1  ; Symbol
-           #:u2  ; Symbol
-           #:u4  ; Symbol
-           #:u8  ; Symbol
-           #:u16 ; Symbol
+  (:export #:u8   ; Symbol
+           #:u16  ; Symbol
+           #:u32  ; Symbol
+           #:u64  ; Symbol
+           #:u128 ; Symbol
            )
 
   ;; Signed integers
-  (:export #:s1  ; Symbol
-           #:s2  ; Symbol
-           #:s4  ; Symbol
-           #:s8  ; Symbol
-           #:s16 ; Symbol
+  (:export #:s8   ; Symbol
+           #:s16  ; Symbol
+           #:s32  ; Symbol
+           #:s64  ; Symbol
+           #:s128 ; Symbol
            )
 
   ;; VarNums (https://developers.google.com/protocol-buffers/docs/encoding#varints)
@@ -77,8 +77,8 @@ collisions with some symbols in CL package and for the sake of consistency.")
            )
 
   ;; Floating point numbers
-  (:export #:f4 ; Symbol
-           #:f8 ; Symbol
+  (:export #:f32 ; Symbol
+           #:f64 ; Symbol
            )
 
   ;; Characters

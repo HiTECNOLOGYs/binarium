@@ -18,10 +18,10 @@
     (write-binary-type type data buffer)))
 
 (define-composite-type a-bunch-of-stuff
-  (binarium.types:u8 unsigned-long)
-  (binarium.types:s8 signed-long)
+  (binarium.types:u64 unsigned-long)
+  (binarium.types:s64 signed-long)
   (binarium.types:var-int varint)
-  (binarium.types:f4 float)
+  (binarium.types:f32 float)
   (binarium.types:char character)
   (binarium.types:string string)
   (binarium.types:bool boolean)
@@ -52,20 +52,20 @@
                 (gen-uuid)
                 (gen-buffer))))
 
-(defparameter *u1*
+(defparameter *u8*
   `((255 . ,(bytes-array #xFF))))
 
-(defparameter *u2*
+(defparameter *u16*
   `((48350 . ,(bytes-array #xBC #xDE))))
 
-(defparameter *u4*
+(defparameter *u32*
   `((2883221305 . ,(bytes-array #xAB #xDA #x77 #x39))))
 
-(defparameter *u8*
+(defparameter *u64*
   `((1839742453595042431 . ,(bytes-array #x19 #x88 #x14 #x03
                                          #xA0 #xBC #xF2 #x7F))))
 
-(defparameter *u16*
+(defparameter *u128*
   `((33937258203006218737495434190295007232 . ,(bytes-array #x19 #x88 #x14 #x03
                                                             #xA0 #xBC #xF2 #x7F
                                                             #x04 #x08 #x15 #x16
@@ -95,27 +95,27 @@
 (in-suite :binarium.decoding)
 
 (test basic-types-decoding
-  (dolist (number *u1*)
-    (is (= (car number) (read-type (cdr number) 'binarium.types:u1))))
-  (dolist (number *u2*)
-    (is (= (car number) (read-type (cdr number) 'binarium.types:u2))))
-  (dolist (number *u4*)
-    (is (= (car number) (read-type (cdr number) 'binarium.types:u4))))
   (dolist (number *u8*)
     (is (= (car number) (read-type (cdr number) 'binarium.types:u8))))
   (dolist (number *u16*)
-    (is (= (car number) (read-type (cdr number) 'binarium.types:u16)))))
+    (is (= (car number) (read-type (cdr number) 'binarium.types:u16))))
+  (dolist (number *u32*)
+    (is (= (car number) (read-type (cdr number) 'binarium.types:u32))))
+  (dolist (number *u64*)
+    (is (= (car number) (read-type (cdr number) 'binarium.types:u64))))
+  (dolist (number *u128*)
+    (is (= (car number) (read-type (cdr number) 'binarium.types:u128)))))
 
 (test (composite-types-decoding :depends-on basic-types-decoding)
   (dolist (type *composite*)
-    (destructuring-bind (u8 s8 var-int f4 char str bool uuid byte-array)
+    (destructuring-bind (u64 s64 var-int f32 char str bool uuid byte-array)
         (read-type (cdr type) 'a-bunch-of-stuff)
-      (destructuring-bind (o-u8 o-s8 o-var-int o-f4 o-char o-str o-bool o-uuid o-byte-array)
+      (destructuring-bind (o-u64 o-s64 o-var-int o-f32 o-char o-str o-bool o-uuid o-byte-array)
           (car type)
-        (is (= o-u8 u8))
-        (is (= o-s8 s8))
+        (is (= o-u64 u64))
+        (is (= o-s64 s64))
         (is (= o-var-int var-int))
-        (is (= o-f4 f4))
+        (is (= o-f32 f32))
         (is (equal o-char char))
         (is (equal o-str str))
         (is (equal o-bool bool))
@@ -129,16 +129,16 @@
 (in-suite :binarium.encoding)
 
 (test basic-types-encoding
-  (dolist (number *u1*)
-    (is (equalp (cdr number) (write-type (car number) 'binarium.types:u1))))
-  (dolist (number *u2*)
-    (is (equalp (cdr number) (write-type (car number) 'binarium.types:u2))))
-  (dolist (number *u4*)
-    (is (equalp (cdr number) (write-type (car number) 'binarium.types:u4))))
   (dolist (number *u8*)
     (is (equalp (cdr number) (write-type (car number) 'binarium.types:u8))))
   (dolist (number *u16*)
-    (is (equalp (cdr number) (write-type (car number) 'binarium.types:u16)))))
+    (is (equalp (cdr number) (write-type (car number) 'binarium.types:u16))))
+  (dolist (number *u32*)
+    (is (equalp (cdr number) (write-type (car number) 'binarium.types:u32))))
+  (dolist (number *u64*)
+    (is (equalp (cdr number) (write-type (car number) 'binarium.types:u64))))
+  (dolist (number *u128*)
+    (is (equalp (cdr number) (write-type (car number) 'binarium.types:u128)))))
 
 (test (composite-types-encoding :depends-on basic-types-encoding)
   (dolist (type *composite*)

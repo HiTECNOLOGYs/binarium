@@ -28,10 +28,10 @@
   (uuid:make-v4-uuid))
 
 (binarium:define-composite-type a-bunch-of-stuff
-  (binarium.types:u8 unsigned-long)
-  (binarium.types:s8 signed-long)
+  (binarium.types:u64 unsigned-long)
+  (binarium.types:s64 signed-long)
   (binarium.types:var-int varint)
-  (binarium.types:f4 float)
+  (binarium.types:f32 float)
   (binarium.types:char character)
   (binarium.types:string string)
   (binarium.types:bool boolean)

@@ -9,11 +9,11 @@
 (defmacro define-unsigned-integer (name size)
   `(define-binary-type binarium.types:unsigned-integer ,name ,size))
 
-(define-unsigned-integer binarium.types:u1 1)
-(define-unsigned-integer binarium.types:u2 2)
-(define-unsigned-integer binarium.types:u4 4)
-(define-unsigned-integer binarium.types:u8 8)
-(define-unsigned-integer binarium.types:u16 16)
+(define-unsigned-integer binarium.types:u8 1)
+(define-unsigned-integer binarium.types:u16 2)
+(define-unsigned-integer binarium.types:u32 4)
+(define-unsigned-integer binarium.types:u64 8)
+(define-unsigned-integer binarium.types:u128 16)
 
 (defmethod read-binary-type ((type binarium.types:unsigned-integer) buffer)
   (case (binary-type-size type)
@@ -42,11 +42,11 @@
 (defmacro define-signed-integer (name size)
   `(define-binary-type binarium.types:signed-integer ,name ,size))
 
-(define-signed-integer binarium.types:s1 1)
-(define-signed-integer binarium.types:s2 2)
-(define-signed-integer binarium.types:s4 4)
-(define-signed-integer binarium.types:s8 8)
-(define-signed-integer binarium.types:s16 16)
+(define-signed-integer binarium.types:s8 1)
+(define-signed-integer binarium.types:s16 2)
+(define-signed-integer binarium.types:s32 4)
+(define-signed-integer binarium.types:s64 8)
+(define-signed-integer binarium.types:s128 16)
 
 (defmethod read-binary-type ((type binarium.types:signed-integer) buffer)
   (case (binary-type-size type)
@@ -112,8 +112,8 @@
 (defmacro define-float (name size)
   `(define-binary-type binarium.types:float ,name ,size))
 
-(define-float binarium.types:f4 4)
-(define-float binarium.types:f8 8)
+(define-float binarium.types:f32 4)
+(define-float binarium.types:f64 8)
 
 (defmethod read-binary-type ((type binarium.types:float) buffer)
   (case (binary-type-size type)
@@ -151,7 +151,7 @@
 (defclass binarium.types:string (binary-array) ())
 
 (defmacro define-string (name prefix-type)
-  `(define-binary-array binarium.types:string ,name ,prefix-type binarium.types:u1))
+  `(define-binary-array binarium.types:string ,name ,prefix-type binarium.types:u8))
 
 (define-string binarium.types:string binarium.types:var-int)
 
@@ -266,7 +266,7 @@
             (setf (gethash binary table) symbol))
       table)))
 
-(defmacro define-enum (name (&key (binary-type 'binarium.types:u1)) &body mappings)
+(defmacro define-enum (name (&key (binary-type 'binarium.types:u32)) &body mappings)
   "Defines new enum. The mappins are lists of format: (binary-value symbol).
 At the moment, it does not support automatic numbering, but it will."
   `(define-binary-type binarium.types:symbol-map ,name (binary-type-size ',binary-type)
