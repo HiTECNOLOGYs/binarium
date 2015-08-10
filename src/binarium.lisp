@@ -14,6 +14,7 @@
   ((name :initarg :name
          :accessor binary-type-name)
    (size :initarg :size
+         :documentation "Size in octets."
          :accessor binary-type-size))
   (:documentation "Basic atomic binary type."))
 
