@@ -93,7 +93,7 @@
 
 (defmethod write-binary-type ((type binarium.types:var-num) (data number) buffer)
   (loop with number-length = (integer-length data)
-        for i to number-length by 7
+        for i below number-length by 7
         doing (fast-io:fast-write-byte (logior (ldb (byte 7 i) data)
                                                (if (< (+ i 7) number-length)
                                                  (ash 1 7)
