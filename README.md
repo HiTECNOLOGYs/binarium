@@ -136,3 +136,39 @@ The following macros can be used to simplify defining your own types:
 * BINARIUM:DEFINE-BINARY-ARRAY
 
 For more information, see sources or documentation strings.
+
+Benchmarks
+==========
+
+Currently, only benchmarking of composite type decoder was done. For more
+information please refer to source code which is located at benchmark
+directory.
+
+Benchmarking itself was done using trivial-benchmark (for which I would like
+to thank its developer, Nicolas; it's a great tool).
+
+Encoding:
+-                COUNT  TOTAL     MINIMUM  MAXIMUM   MEDIAN  AVERAGE   DEVIATION
+REAL-TIME        10000  0.193     0        0.001     0       0.000019  0.000138
+RUN-TIME         10000  0.14      0        0.007     0       0.000014  0.000235
+USER-RUN-TIME    10000  0.13      0        0.006667  0       0.000013  0.000228
+SYSTEM-RUN-TIME  10000  0.02      0        0.006667  0       0.000002  0.000094
+PAGE-FAULTS      10000  0         0        0         0       0         0.0
+GC-RUN-TIME      10000  0         0        0         0       0         0.0
+BYTES-CONSED     10000  37969040  0        32768     0       3796.904  10486.686
+EVAL-CALLS       10000  0         0        0         0       0         0.0
+
+Decoding:
+-                COUNT  TOTAL     MINIMUM  MAXIMUM   MEDIAN  AVERAGE    DEVIATION
+REAL-TIME        10000  0.177     0        0.016     0       0.000018   0.000203
+RUN-TIME         10000  0.211     0        0.017     0       0.000021   0.000331
+USER-RUN-TIME    10000  0.18667   0        0.016666  0       0.000019   0.000316
+SYSTEM-RUN-TIME  10000  0.026665  0        0.006667  0       0.000003   0.000105
+PAGE-FAULTS      10000  0         0        0         0       0          0.0
+GC-RUN-TIME      10000  0.034     0        0.017     0       0.000003   0.00024
+BYTES-CONSED     10000  49794736  0        32768     0       4979.4736  11761.419
+EVAL-CALLS       10000  0         0        0         0       0          0.0
+
+Some time later I plan to add comparison to other binary decoding libraries and
+probably write more advanced tests to put the code into environment close to
+real-life situation.
