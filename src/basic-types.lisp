@@ -92,13 +92,16 @@
       (logior unsigned (- (mask-field (byte 1 (1- bits-len)) unsigned))))))
 
 (defmethod write-binary-type ((type binarium.types:var-num) (data number) buffer)
-  (loop with number-length = (integer-length data)
-        for i below number-length by 7
-        doing (fast-io:fast-write-byte (logior (ldb (byte 7 i) data)
-                                               (if (< (+ i 7) number-length)
-                                                 (ash 1 7)
-                                                 (ash 0 7)))
-                                       buffer)))
+  ;; Adding special handling for zerop is faster and easier
+  (if (zerop data)
+    (fast-io:fast-write-byte 0 buffer) ; Writing zerop
+    (loop with number-length = (integer-length data)
+          for i below number-length by 7
+          doing (fast-io:fast-write-byte (logior (ldb (byte 7 i) data)
+                                                 (if (< (+ i 7) number-length)
+                                                   (ash 1 7)
+                                                   (ash 0 7)))
+                                         buffer))))
 
 ;;; **************************************************************************
 ;;;  Floating point numbers
