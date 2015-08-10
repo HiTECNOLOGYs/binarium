@@ -22,6 +22,16 @@ exercise for me.
 Anyway, don't take it too seriously and *don't* use it in production as it may
 be slow, buggy and inefficient.
 
+TODO
+====
+
+* [ ] Implement efficient bit flags decoder
+* [ ] Implement "enums" supports (value to symbol mapping)
+* [ ] Add padding support for composite objects
+* [ ] Add support for object mapping to composite types
+* [ ] Write more convenience macros
+* [ ] Write better benchmarks
+
 Usage
 =====
 
