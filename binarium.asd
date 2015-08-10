@@ -27,3 +27,14 @@
   :components ((:file "packages")
                (:file "suites")
                (:file "tests")))
+
+(defsystem #:binarium/benchmark
+  :author "Mark Fedurin <hitecnologys@gmail.com>"
+  :description "Benchmarks for binarium."
+  :depends-on (#:binarium          ; Target
+               #:trivial-benchmark ; Benchmarking
+               )
+  :serial t
+  :pathname "benchmark/"
+  :components ((:file "packages")
+               (:file "benchmark")))
