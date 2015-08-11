@@ -49,15 +49,15 @@ The following types are shipped with binarium:
 
 Correspondingly, the following symbols are bound to above mentioned types:
 
-* BINTYPE:U8, BINTYPE:U16, BINTYPE:U32, BINTYPE:U64, BINTYPE:U128
-* BINTYPE:S8, BINTYPE:S16, BINTYPE:S32, BINTYPE:S64, BINTYPE:S128
-* BINTYPE:VAR-INT, BINTYPE:VAR-LONG
-* BINTYPE:F32, BINTYPE:F64
-* BINTYPE:CHAR
-* BINTYPE:STRING
-* BINTYPE:BOOL
-* BINTYPE:UUID
-* BINTYPE:BYTE-ARRAY
+* `BINTYPE:U8`, `BINTYPE:U16`, `BINTYPE:U32`, `BINTYPE:U64`, `BINTYPE:U128`
+* `BINTYPE:S8`, `BINTYPE:S16`, `BINTYPE:S32`, `BINTYPE:S64`, `BINTYPE:S128`
+* `BINTYPE:VAR-INT`, `BINTYPE:VAR-LONG`
+* `BINTYPE:F32`, `BINTYPE:F64`
+* `BINTYPE:CHAR`
+* `BINTYPE:STRING`
+* `BINTYPE:BOOL`
+* `BINTYPE:UUID`
+* `BINTYPE:BYTE-ARRAY`
 
 In order to use binarium you must first create fast-io buffer. This can be done manually or using the following macros:
 
@@ -115,8 +115,8 @@ To make use of enums you should first define enum with the help of
 
 => #(0 0 0 0)
 ;; This is taken from `DEFAULT-BINARY` slot of `SYMBOL-MAP` class which can be
-;; altered using :default-binary key of `DEFINE-ENUM`. See docstring of
-;; `DEFINE-ENUM` for more information
+;; altered using :default-binary key of `BINTYPE:DEFINE-ENUM`. See docstring of
+;; `BINTYPE:DEFINE-ENUM` for more information
 
 (binarium:with-binary-input (buffer (make-array 4 :initial-contents (list 0 0 0 1)
                                                   :element-type '(unsigned-byte 8)))
@@ -129,9 +129,9 @@ To make use of enums you should first define enum with the help of
   (binarium:read-binary-type 'my-enum buffer))
 
 => bintype:undefined
-;; This is taken from `DEFAULT-SYMBOL` slot of `SYMBOL-MAP` class which can be
-;; altered using :default-symbol key of `DEFINE-ENUM`. See docstring of
-;; `DEFINE-ENUM` for more information
+;; This is taken from `DEFAULT-SYMBOL` slot of `BINTYPE:SYMBOL-MAP` class which can be
+;; altered using :default-symbol key of `BINTYPE:DEFINE-ENUM`. See docstring of
+;; `BINTYPE:DEFINE-ENUM` for more information
 ```
 
 Composite types
@@ -143,7 +143,7 @@ together as an atomic type.
 Now they aren't much but I plan to make their parsing more efficient by
 precompiling parsers for them instead of iterating over their structure.
 
-You can define composite types using BINARIUM:DEFINE-COMPOSITE-TYPE macro:
+You can define composite types using `BINARIUM:DEFINE-COMPOSITE-TYPE` macro:
 
 ```lisp
 (binarium:define-composite-type my-composite-type
@@ -160,35 +160,35 @@ composite types decode to instances of the corresponding classes with slots
 bound to field values.
 
 If the composite types decoder/encoder encounters invalid composite type
-structure, INVALID-STRUCTURE condition is signaled.
+structure, `BINARIUM:INVALID-STRUCTURE` condition is signaled.
 
 Extending default types
 =======================
 
 If you want to extend default binarium types, the following classes are available:
 
-*  BINTYPE:UNSIGNED-INTEGER
-*  BINTYPE:SIGNED-INTEGER
-*  BINTYPE:VAR-NUM
-*  BINTYPE:FLOAT
-*  BINTYPE:CHARACTER
-*  BINTYPE:STRING
-*  BINTYPE:BOOLEAN
-*  BINTYPE:UUID
-*  BINTYPE:BYTE-ARRAY
+*  `BINTYPE:UNSIGNED-INTEGER`
+*  `BINTYPE:SIGNED-INTEGER`
+*  `BINTYPE:VAR-NUM`
+*  `BINTYPE:FLOAT`
+*  `BINTYPE:CHARACTER`
+*  `BINTYPE:STRING`
+*  `BINTYPE:BOOLEAN`
+*  `BINTYPE:UUID`
+*  `BINTYPE:BYTE-ARRAY`
+*  `BINTYPE:SYMBOL-MAP`
 
 If you want to define your own types the following classes may aid you:
 
-* BINARIUM:BINARY-TYPE
-* BINARIUM:BINARY-ARRAY
-
-* BINARIUM:BASIC-TYPE
-* BINARIUM:COMPOSITE-TYPE
+* `BINARIUM:BINARY-TYPE`
+* `BINARIUM:BINARY-ARRAY`
+* `BINARIUM:BASIC-TYPE`
+* `BINARIUM:COMPOSITE-TYPE`
 
 The following macros can be used to simplify defining your own types:
 
-* BINARIUM:DEFINE-BINARY-TYPE
-* BINARIUM:DEFINE-BINARY-ARRAY
+* `BINARIUM:DEFINE-BINARY-TYPE`
+* `BINARIUM:DEFINE-BINARY-ARRAY`
 
 For more information, see sources or documentation strings.
 
