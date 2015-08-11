@@ -235,29 +235,40 @@
    (reverse-symbols-map :initarg :reverse-symbols-map
                         :initform (make-hash-table :test 'equal)
                         :documentation "Defines symbol-to-number mappings.")
+   (default-symbol :initarg :default-symbol
+                   :initform 'binarium.types:undefined)
+   (default-binary :initarg :default-binary
+                   :initform -1)
    (binary-type :initarg :binary-type
+                :initform 'binarium.types:u32
                 :documentation "Defines type of binary representation of symbols.")))
 
 (defmethod initialize-instance :after ((instance binarium.types:symbol-map) &rest initargs)
   (declare (ignore initargs))
   (with-slots (symbols-map reverse-symbols-map) instance
     (maphash #'(lambda (key value)
-                 (setf (symbol->binary value reverse-symbols-map) key))
+                 (setf (gethash value reverse-symbols-map) key))
              symbols-map)))
 
-(defun (setf symbol->binary) (new-value data table)
-  (setf (gethash data table) new-value))
+(defun (setf symbol->binary) (new-value data map)
+  (check-type map binarium.types:symbol-map)
+  (with-slots (reverse-symbols-map) map
+    (setf (gethash data reverse-symbols-map) new-value)))
 
-(defun (setf binary->symbol) (new-value data table)
-  (setf (gethash data table) new-value))
+(defun (setf binary->symbol) (new-value data map)
+  (check-type map binarium.types:symbol-map)
+  (with-slots (symbols-map) map
+    (setf (gethash data symbols-map) new-value)))
 
-;; TODO Implement configurable default value
-(defun symbol->binary (data table)
-  (gethash data table 0))
+(defun symbol->binary (data map)
+  (check-type map binarium.types:symbol-map)
+  (with-slots (reverse-symbols-map default-binary) map
+    (gethash data reverse-symbols-map default-binary)))
 
-;; TODO Implement configurable default value
-(defun binary->symbol (data table)
-  (gethash data table 'binarium.types:undefined))
+(defun binary->symbol (data map)
+  (check-type map binarium.types:symbol-map)
+  (with-slots (symbols-map default-symbol) map
+    (gethash data symbols-map default-symbol)))
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defun make-mappings-hash-table (mappings)
@@ -266,12 +277,22 @@
             (setf (gethash binary table) symbol))
       table)))
 
-(defmacro define-enum (name (&key (binary-type 'binarium.types:u32)) &body mappings)
+(defmacro define-enum (name (&key (binary-type 'binarium.types:u32)
+                                  (default-binary -1)
+                                  (default-symbol 'binarium.types:undefined))
+                       &body mappings)
   "Defines new enum. The mappins are lists of format: (binary-value symbol).
-At the moment, it does not support automatic numbering, but it will."
+At the moment, it does not support automatic numbering, but it will.
+`default-binary' is used when symbol could not be encoded.
+`default-symbol' is used when binary data could not be decoded.
+The reason these are not conditions is that conditions create unwanted overhead
+and this could potentially lead to DOS if somebody decides to send improper
+symbols over a wire."
   `(define-binary-type binarium.types:symbol-map ,name (binary-type-size ',binary-type)
      :symbols-map ,(make-mappings-hash-table mappings)
-     :binary-type ',binary-type))
+     :binary-type ',binary-type
+     ,@(when default-binary (list :default-binary default-binary))
+     ,@(when default-symbol (list :default-symbol default-symbol))))
 
 (defmethod read-binary-type ((type binarium.types:symbol-map) buffer)
   (with-slots (binary-type symbols-map) type
