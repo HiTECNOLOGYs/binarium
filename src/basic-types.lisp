@@ -271,25 +271,48 @@
     (gethash data symbols-map default-symbol)))
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defun make-mappings-hash-table (mappings)
-    (let ((table (make-hash-table :test 'equal)))
-      (loop for (binary symbol) in mappings do
-            (setf (gethash binary table) symbol))
-      table)))
+  (defun find-used-binary-values (mappings)
+    (loop for mapping in mappings
+          when (listp mapping)
+            collect (car mapping)))
+
+  (defun get-first-unused-value (counter used-values)
+    (if (not (find counter used-values))
+      counter
+      (get-first-unused-value (1+ counter) used-values)))
+
+  (defun make-mappings-hash-table (mappings &key (start 0))
+    (let ((table (make-hash-table :test 'equal))
+          (used-values (find-used-binary-values mappings))
+          (counter start))
+      (dolist (mapping mappings table)
+        (typecase mapping
+          (symbol
+            (setf counter (get-first-unused-value counter used-values))
+            (push counter used-values)
+            (setf (gethash counter table) mapping))
+          (list
+            (destructuring-bind (binary symbol) mapping
+              (setf (gethash binary table) symbol))))))))
 
 (defmacro define-enum (name (&key (binary-type 'binarium.types:u32)
                                   (default-binary -1)
-                                  (default-symbol 'binarium.types:undefined))
+                                  (default-symbol 'binarium.types:undefined)
+                                  (start 0))
                        &body mappings)
-  "Defines new enum. The mappins are lists of format: (binary-value symbol).
-At the moment, it does not support automatic numbering, but it will.
+  "Defines new enum. The mappins are lists of format: (binary-value symbol) | symbol
+If binary value is ommited, it's automatically asssigned.
+Be careful: it does not verify that given type can hold all the symbols.
 `default-binary' is used when symbol could not be encoded.
 `default-symbol' is used when binary data could not be decoded.
 The reason these are not conditions is that conditions create unwanted overhead
 and this could potentially lead to DOS if somebody decides to send improper
 symbols over a wire."
+  (check-type default-binary fixnum)
+  (check-type default-symbol symbol)
+  (check-type start fixnum)
   `(define-binary-type binarium.types:symbol-map ,name (binary-type-size ',binary-type)
-     :symbols-map ,(make-mappings-hash-table mappings)
+     :symbols-map ,(make-mappings-hash-table mappings :start start)
      :binary-type ',binary-type
      ,@(when default-binary (list :default-binary default-binary))
      ,@(when default-symbol (list :default-symbol default-symbol))))
