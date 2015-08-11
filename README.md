@@ -26,7 +26,7 @@ TODO
 ====
 
 * [ ] Implement efficient bit flags decoder
-* [ ] Implement "enums" supports (value to symbol mapping)
+* [X] Implement "enums" supports (value to symbol mapping)
 * [ ] Add padding support for composite objects
 * [ ] Add support for object mapping to composite types
 * [ ] Write more convenience macros
@@ -87,6 +87,51 @@ The encoding and decoding is done though the following calls:
 ;; * "data" is the data you want to read
 (binarium:with-binary-input (buffer data)
   (binarium:read-binary-type type buffer))
+```
+
+Enums
+=====
+
+Enums are put in separate sections as their usage is a bit trickier than the
+usage of regular binary types.
+
+To make use of enums you should first define enum with the help of
+`BINTYPE:DEFINE-ENUM` macro:
+
+```lisp
+;; Defining enum
+(bintype:define-enum my-enum ()
+  (0 :one)
+  (1 :two)
+  (2 :three))
+
+(binarium:with-binary-output (buffer)
+  (binarium:write-binary-type 'my-enum :two buffer))
+
+=> #(0 0 0 1)
+
+(binarium:with-binary-output (buffer)
+  (binarium:write-binary-type 'my-enum :symbol buffer))
+
+=> #(0 0 0 0)
+;; This is taken from `DEFAULT-BINARY` slot of `SYMBOL-MAP` class which can be
+;; altered using :default-binary key of `DEFINE-ENUM`. See docstring of
+;; `DEFINE-ENUM` for more information
+
+(binarium:with-binary-input (buffer (make-array 4 :initial-contents (list 0 0 0 1)
+                                                  :element-type '(unsigned-byte 8)))
+  (binarium:read-binary-type 'my-enum buffer))
+
+=> :two
+
+(binarium:with-binary-input (buffer (make-array 4 :initial-contents (list 0 0 0 10)
+                                                  :element-type '(unsigned-byte 8)))
+  (binarium:read-binary-type 'my-enum buffer))
+
+=> bintype:undefined
+;; This is taken from `DEFAULT-SYMBOL` slot of `SYMBOL-MAP` class which can be
+;; altered using :default-symbol key of `DEFINE-ENUM`. See docstring of
+;; `DEFINE-ENUM` for more information
 ```
 
 Composite types
