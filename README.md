@@ -90,7 +90,7 @@ The encoding and decoding is done though the following calls:
 ```
 
 Enums
-=====
+-----
 
 Enums are put in separate sections as their usage is a bit trickier than the
 usage of regular binary types.
@@ -135,7 +135,7 @@ To make use of enums you should first define enum with the help of
 ```
 
 Composite types
-===============
+---------------
 
 Composite types are a way to pack a few basic (or even other composite) types
 together as an atomic type.
@@ -162,8 +162,8 @@ bound to field values.
 If the composite types decoder/encoder encounters invalid composite type
 structure, `BINARIUM:INVALID-STRUCTURE` condition is signaled.
 
-Extending default types
-=======================
+Extending binarium
+==================
 
 If you want to extend default binarium types, the following classes are available:
 
@@ -202,8 +202,14 @@ directory.
 Benchmarking itself was done using trivial-benchmark (for which I would like
 to thank its developer, Nicolas; it's a great tool).
 
+Some time later I plan to add comparison to other binary decoding libraries and
+probably write more advanced tests to put the code into environment close to
+real-life situation.
+
+Encoding
+--------
+
 ```
-Encoding:
 -                COUNT  TOTAL     MINIMUM  MAXIMUM   MEDIAN  AVERAGE   DEVIATION
 REAL-TIME        10000  0.193     0        0.001     0       0.000019  0.000138
 RUN-TIME         10000  0.14      0        0.007     0       0.000014  0.000235
@@ -215,8 +221,10 @@ BYTES-CONSED     10000  37969040  0        32768     0       3796.904  10486.686
 EVAL-CALLS       10000  0         0        0         0       0         0.0
 ```
 
+Decoding
+--------
+
 ```
-Decoding:
 -                COUNT  TOTAL     MINIMUM  MAXIMUM   MEDIAN  AVERAGE    DEVIATION
 REAL-TIME        10000  0.177     0        0.016     0       0.000018   0.000203
 RUN-TIME         10000  0.211     0        0.017     0       0.000021   0.000331
@@ -227,7 +235,3 @@ GC-RUN-TIME      10000  0.034     0        0.017     0       0.000003   0.00024
 BYTES-CONSED     10000  49794736  0        32768     0       4979.4736  11761.419
 EVAL-CALLS       10000  0         0        0         0       0          0.0
 ```
-
-Some time later I plan to add comparison to other binary decoding libraries and
-probably write more advanced tests to put the code into environment close to
-real-life situation.
